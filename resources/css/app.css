@@ -1,0 +1,562 @@
+﻿@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+@source '../**/*.vue';
+
+/*
+ * Varian `dark:` mengikuti tema aplikasi (atribut data-tema), bukan preferensi OS.
+ * Tanpa ini, kelas dark: aktif berdasarkan sistem operasi walaupun aplikasi dalam mode terang.
+ */
+@custom-variant dark (&:where([data-tema="gelap"], [data-tema="gelap"] *));
+
+/* =====================================================================
+ * TOKEN DESAIN — Palet Laut Togean (sumber: DESIGN.md bagian 2)
+ * Nama --warna-* lama dipertahankan agar halaman yang ada tetap berfungsi.
+ * ===================================================================== */
+:root {
+    --warna-utama: #0E7C86;
+    --warna-utama-gelap: #0A5F67;
+    --warna-utama-muda: #D5EEF0;
+    --warna-utama-teks: #0A5F67;
+    --warna-navy: #12344D;
+    --warna-navy-dalam: #0D2A3F;
+    --warna-aksen: #F26B4F;
+    --warna-aksen-teks: #C2492E;
+    --warna-pasir: #F5EFE3;
+    --warna-permukaan: #FFFFFF;
+    --warna-permukaan-redup: #FAF6EE;
+    --warna-teks: #12344D;
+    --warna-teks-redup: #556877;
+    --warna-teks-samar: #7A8B98;
+    --warna-garis: #E3DACB;
+    --warna-garis-kuat: #CFC2AB;
+    --warna-emas: #E0A422;
+    --warna-emas-teks: #8A6200;
+    --warna-hijau-laut: #6BC5B8;
+    --warna-sukses: #2E8B57;
+    --warna-bahaya: #C2492E;
+    --warna-kerangka: #ECE4D5;
+    --radius-kartu: 16px;
+    --radius-tombol: 12px;
+    --radius-input: 8px;
+    --bayangan-kartu: 0 1px 2px rgba(18, 52, 77, 0.05), 0 4px 16px rgba(18, 52, 77, 0.05);
+    --bayangan-angkat: 0 12px 32px rgba(18, 52, 77, 0.16);
+    color-scheme: light;
+}
+
+:root[data-tema="gelap"] {
+    --warna-pasir: #0B1F2E;
+    --warna-permukaan: #102C41;
+    --warna-permukaan-redup: #0E2638;
+    --warna-utama: #4FC3CC;
+    --warna-utama-gelap: #2FA3AD;
+    --warna-utama-muda: #163F55;
+    --warna-utama-teks: #7FD5DC;
+    --warna-navy: #081723;
+    --warna-navy-dalam: #06121C;
+    --warna-teks: #EEF2F4;
+    --warna-teks-redup: #A7BBC8;
+    --warna-teks-samar: #7F97A8;
+    --warna-aksen: #FF8A70;
+    --warna-aksen-teks: #FF9E88;
+    --warna-garis: #1E4560;
+    --warna-garis-kuat: #2B5A7A;
+    --warna-emas-teks: #F2C25A;
+    --warna-kerangka: #17384F;
+    --bayangan-kartu: 0 1px 2px rgba(0, 0, 0, 0.25);
+    --bayangan-angkat: 0 16px 40px rgba(0, 0, 0, 0.45);
+    color-scheme: dark;
+}
+
+/* Pemetaan token ke utilitas Tailwind: bg-permukaan, text-tinta, border-garis, dst. */
+@theme inline {
+    --color-latar: var(--warna-pasir);
+    --color-permukaan: var(--warna-permukaan);
+    --color-permukaan-redup: var(--warna-permukaan-redup);
+    --color-tinta: var(--warna-teks);
+    --color-tinta-redup: var(--warna-teks-redup);
+    --color-tinta-samar: var(--warna-teks-samar);
+    --color-garis: var(--warna-garis);
+    --color-garis-kuat: var(--warna-garis-kuat);
+    --color-utama: var(--warna-utama);
+    --color-utama-gelap: var(--warna-utama-gelap);
+    --color-utama-muda: var(--warna-utama-muda);
+    --color-utama-teks: var(--warna-utama-teks);
+    --color-navy: var(--warna-navy);
+    --color-navy-dalam: var(--warna-navy-dalam);
+    --color-karang: var(--warna-aksen);
+    --color-karang-teks: var(--warna-aksen-teks);
+    --color-emas: var(--warna-emas);
+    --color-emas-teks: var(--warna-emas-teks);
+    --color-hijau-laut: var(--warna-hijau-laut);
+    --color-sukses: var(--warna-sukses);
+    --color-bahaya: var(--warna-bahaya);
+    --color-kerangka: var(--warna-kerangka);
+
+    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-heading: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+    --shadow-kartu: var(--bayangan-kartu);
+    --shadow-angkat: var(--bayangan-angkat);
+}
+
+body {
+    background-color: var(--warna-pasir);
+    color: var(--warna-teks);
+    font-family: var(--font-sans);
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+h1, h2, h3, h4, .font-heading {
+    font-family: var(--font-heading);
+}
+
+.tabular-nums {
+    font-variant-numeric: tabular-nums;
+}
+
+:focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--warna-utama) 45%, transparent);
+    outline-offset: 2px;
+}
+
+/* =====================================================================
+ * KOMPONEN DASAR
+ * ===================================================================== */
+.kartu-togean,
+.surface-card {
+    background-color: var(--warna-permukaan);
+    border: 1px solid var(--warna-garis);
+    border-radius: var(--radius-kartu);
+    box-shadow: var(--bayangan-kartu);
+}
+
+.tombol-utama {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    background-color: var(--warna-utama);
+    color: #FFFFFF;
+    border-radius: var(--radius-tombol);
+    min-height: 44px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.25rem;
+    white-space: nowrap;
+    text-decoration: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+    box-sizing: border-box;
+    transition: background-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+:root[data-tema="gelap"] .tombol-utama {
+    color: #0B1F2E;
+}
+
+.tombol-utama:hover {
+    background-color: var(--warna-utama-gelap);
+}
+
+.tombol-utama:active {
+    transform: translateY(1px);
+}
+
+.tombol-utama:disabled,
+.tombol-utama[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.tombol-ajakan {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    background-color: var(--warna-aksen);
+    color: #12344D;
+    border-radius: var(--radius-tombol);
+    min-height: 44px;
+    font-size: 0.875rem;
+    font-weight: 700;
+    line-height: 1.25rem;
+    white-space: nowrap;
+    text-decoration: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+    box-sizing: border-box;
+    transition: filter 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.tombol-ajakan:hover {
+    filter: brightness(0.95);
+}
+
+.tombol-ajakan:active {
+    transform: translateY(1px);
+}
+
+.tombol-ajakan:disabled,
+.tombol-ajakan[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Kerangka (skeleton) memuat — abu hangat, shimmer pelan */
+.kerangka {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--warna-kerangka);
+    border-radius: 8px;
+}
+
+.kerangka::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--warna-permukaan) 55%, transparent), transparent);
+    animation: kerangka-kilau 1.4s ease-in-out infinite;
+}
+
+@keyframes kerangka-kilau {
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* Masuk halus untuk konten yang baru tampil */
+.muncul-halus {
+    animation: muncul-halus 0.22s ease-out both;
+}
+
+@keyframes muncul-halus {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+.kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.5rem;
+    height: 1.35rem;
+    padding: 0 0.35rem;
+    border: 1px solid var(--warna-garis-kuat);
+    border-bottom-width: 2px;
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--warna-teks-redup);
+    background-color: var(--warna-permukaan);
+}
+
+/* Scrollbar tipis untuk area gulir di dalam panel */
+.gulir-tipis {
+    scrollbar-width: thin;
+    scrollbar-color: var(--warna-garis-kuat) transparent;
+}
+
+/* Tooltip ApexCharts mengikuti token tema */
+.apexcharts-tooltip {
+    border: 1px solid var(--warna-garis) !important;
+    background: var(--warna-permukaan) !important;
+    color: var(--warna-teks) !important;
+    box-shadow: var(--bayangan-angkat) !important;
+    border-radius: 10px !important;
+}
+
+.apexcharts-tooltip-title {
+    background: var(--warna-permukaan-redup) !important;
+    border-bottom: 1px solid var(--warna-garis) !important;
+    font-weight: 600 !important;
+}
+
+.apexcharts-xaxis-label,
+.apexcharts-yaxis-label {
+    fill: var(--warna-teks-redup) !important;
+    font-family: var(--font-sans) !important;
+    font-size: 11px !important;
+}
+
+.apexcharts-legend-text {
+    color: var(--warna-teks) !important;
+    font-family: var(--font-sans) !important;
+    font-weight: 600 !important;
+    font-size: 12px !important;
+}
+
+.apexcharts-pie-label {
+    fill: #ffffff !important;
+    font-family: var(--font-mono) !important;
+    font-weight: 700 !important;
+    font-size: 10px !important;
+    letter-spacing: -0.03em !important;
+    paint-order: stroke fill;
+    stroke: rgba(15, 34, 48, 0.55);
+    stroke-width: 2.2px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    filter: none !important;
+}
+
+.apexcharts-datalabel {
+    font-family: var(--font-mono) !important;
+    font-weight: 700 !important;
+    font-size: 10.5px !important;
+    filter: none !important;
+}
+
+.apexcharts-datalabel-label {
+    fill: var(--warna-teks-redup) !important;
+    font-family: var(--font-sans) !important;
+    font-weight: 700 !important;
+    font-size: 11px !important;
+}
+
+.apexcharts-datalabel-value {
+    fill: var(--warna-teks) !important;
+    font-family: var(--font-heading) !important;
+    font-weight: 800 !important;
+}
+
+.apexcharts-gridline {
+    stroke: var(--warna-garis) !important;
+    stroke-dasharray: 3;
+}
+/* Non-home pages share readable controls without changing the public homepage. */
+.workspace-shell { background: color-mix(in srgb, var(--warna-permukaan) 35%, var(--warna-pasir)); }
+.workspace-content {
+    min-width: 0;
+    color: var(--warna-teks);
+}
+.workspace-content :where(.grid > *) { min-width: 0; }
+.workspace-content :where(.kartu-togean, .surface-card) { min-width: 0; }
+.workspace-content :where(.apexcharts-canvas, .apexcharts-svg) { max-width: 100%; }
+.workspace-content :where(h1) {
+    font-size: clamp(1.75rem, 2.4vw, 2.25rem);
+    font-weight: 700;
+    line-height: 1.18;
+    letter-spacing: -0.035em;
+    text-wrap: balance;
+}
+.workspace-content :where(h2) { line-height: 1.3; letter-spacing: -0.02em; }
+.workspace-content :where(h3, h4) { line-height: 1.4; }
+.workspace-content :where(p) { line-height: 1.65; }
+.workspace-content :where(.text-xs) { font-size: 0.8125rem; line-height: 1.55; }
+.workspace-content :where(.text-\[10px\], .text-\[10\.5px\], .text-\[11px\]) { font-size: 0.75rem; line-height: 1.5; }
+.workspace-content :where(label) { font-weight: 600; letter-spacing: normal; text-transform: none; }
+.workspace-content :where(input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='hidden']):not([type='file']), select, textarea) {
+    min-width: 0;
+    max-width: 100%;
+    min-height: 2.875rem;
+    border-radius: 0.75rem;
+    border-color: var(--warna-garis);
+    background-color: var(--warna-permukaan-redup);
+    color: var(--warna-teks);
+    font-size: 0.9375rem;
+    font-weight: 400;
+    line-height: 1.5;
+    padding-block: 0.625rem;
+    accent-color: var(--warna-utama);
+}
+.workspace-content :where(input[type='checkbox'], input[type='radio']) { width: 1rem; height: 1rem; accent-color: var(--warna-utama); }
+.workspace-content :where(input, select, textarea):focus-visible { outline: 2px solid var(--warna-utama); outline-offset: 2px; }
+.workspace-content :where(input, textarea)::placeholder { color: var(--warna-teks-redup); opacity: 1; }
+.workspace-content :where(input:disabled, select:disabled, textarea:disabled) { opacity: 0.65; cursor: not-allowed; }
+.workspace-content :where(button, a) { touch-action: manipulation; }
+.workspace-content :where(button[type='submit']) { min-height: 2.875rem; font-size: 0.875rem; }
+.workspace-content :where(th, td) { padding: 0.8rem 1rem; font-size: 0.8125rem; line-height: 1.55; }
+.workspace-content :where(th) { font-weight: 600; }
+.workspace-content :where(tbody tr:nth-child(even)) { background-color: color-mix(in srgb, var(--warna-permukaan-redup) 65%, transparent); }
+.workspace-content :where(tbody tr:hover) { background-color: color-mix(in srgb, var(--warna-utama-muda) 35%, var(--warna-permukaan)); }
+.workspace-content :where(.surface-card, .kartu-togean) { box-shadow: 0 2px 8px rgba(18,52,77,.035); }
+.workspace-content :where(.workspace-tabs) { position: relative; display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 0.375rem; scrollbar-width: thin; }
+.workspace-content :where(.workspace-tabs > button) { flex-shrink: 0; min-height: 2.75rem; white-space: nowrap; font-size: 0.8125rem; }
+.workspace-content :where(.workspace-header) { padding-bottom: 1.5rem; border-bottom: 1px solid var(--warna-garis); }
+.workspace-content :where(.chart-card-header) { flex-direction: column; flex-wrap: nowrap; align-items: stretch; }
+.workspace-content :where(.chart-card-header > div:first-child) { min-width: 0; width: 100%; flex: 0 1 auto; }
+.workspace-content :where(.chart-card-actions) { align-self: flex-start; }
+.workspace-content :where(.chart-card-actions > button) { min-width: 2.25rem; min-height: 2.25rem; }
+.workspace-content .page-heading { margin-bottom: 1.75rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--warna-garis); }
+.workspace-content .page-breadcrumb { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin-bottom: 1.25rem; color: var(--warna-teks-redup); font-size: .8125rem; line-height: 1.5; }
+.workspace-content .page-breadcrumb > span:last-child { color: var(--warna-utama-teks); font-weight: 600; }
+.workspace-content .page-heading-row { display: flex; flex-direction: column; gap: 1.25rem; }
+.workspace-content .page-description { max-width: 70ch; margin-top: .75rem; font-size: .9375rem; color: var(--warna-teks-redup); }
+.workspace-content .page-heading-actions { display: flex; flex-wrap: wrap; flex-shrink: 0; align-items: center; gap: .75rem; }
+.workspace-content .page-heading-actions :where(a, button) { min-height: 2.75rem; display: inline-flex; align-items: center; justify-content: center; font-size: .8125rem; font-weight: 600; white-space: nowrap; }
+.workspace-content .page-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: .75rem; padding-bottom: 1.5rem; }
+.workspace-content .page-toolbar > div { gap: .5rem; }
+.workspace-content .page-toolbar button { min-height: 2.5rem; font-weight: 600; }
+.workspace-content .destination-card { box-shadow: 0 2px 8px rgba(18,52,77,.035); }
+.workspace-content .destination-card:hover { transform: none; border-color: var(--warna-utama); box-shadow: 0 6px 18px rgba(18,52,77,.07); }
+.workspace-content .destination-card > div:last-child { padding: 1.125rem; }
+.workspace-content .destination-card .font-heading { min-height: 2.8rem; font-size: 1.0625rem; line-height: 1.4; }
+.workspace-content .ticket-card > div:first-child { min-width: 0; flex: 1; }
+.workspace-content .ticket-card > div:first-child > div:last-child { min-width: 0; }
+.workspace-content .ticket-card > div:last-child { flex-shrink: 0; }
+.workspace-content .ticket-symbol { width: 4rem; height: 4rem; }
+.workspace-content .ticket-symbol > svg { width: 2rem; height: 2rem; }
+.workspace-content .ticket-symbol > span { font-size: .5rem; }
+.workspace-content label.block > :where(input:not([type='checkbox']):not([type='radio']), select, textarea) { width: 100%; }
+.workspace-content .moderation-primary > div { grid-column: 1 / -1; }
+.workspace-content .user-management > div.overflow-x-auto { max-height: 420px; overflow: auto; scrollbar-width: thin; }
+.workspace-content .user-management thead { position: sticky; top: 0; z-index: 1; }
+.workspace-content .kpi-grid > div { border-left-width: 1px; border-left-color: var(--warna-garis); padding: 1.25rem; }
+.workspace-content .kpi-grid > div > div:first-child > span:first-child,
+.workspace-content .kpi-grid > div > span:first-child { text-transform: none; letter-spacing: normal; font-size: .8125rem; font-weight: 600; }
+.workspace-content .kpi-grid .font-heading { letter-spacing: -.025em; }
+.executive-summary { container-type: inline-size; }
+.workspace-content .is-briefing .page-heading { margin-bottom: 0; padding-bottom: 1.25rem; }
+.workspace-content .is-briefing .page-breadcrumb { margin-bottom: .875rem; }
+.workspace-content .is-briefing .page-description { max-width: 60ch; }
+.analytics-filter-toggle { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem 1rem; padding: 1rem 1.25rem; font-size: .8125rem; font-weight: 700; cursor: pointer; }
+.analytics-filter-toggle::after { content: '+'; font-size: 1.125rem; color: var(--warna-utama-teks); }
+.analytics-filters[open] > .analytics-filter-toggle::after { content: '−'; }
+.analytics-filters .filter-scope { padding: 0 1.25rem 1rem; }
+.analytics-view-heading { display: flex; flex-direction: column; justify-content: space-between; gap: 1rem; padding-top: .25rem; }
+.analytics-view-picker { flex-shrink: 0; min-width: 0; }
+.analytics-view-picker label { display: block; margin-bottom: .375rem; font-size: .75rem; font-weight: 600; color: var(--warna-teks-redup); }
+.analytics-view-picker select { width: 100%; max-width: 100%; border: 1px solid var(--warna-garis); border-radius: .75rem; padding: .75rem 2rem .75rem .875rem; background-color: var(--warna-permukaan); color: var(--warna-teks); font-size: .8125rem; }
+.briefing-eyebrow { display: flex; align-items: center; gap: .375rem; margin-bottom: .375rem; color: var(--warna-utama-teks); font-size: .6875rem; font-weight: 750; letter-spacing: .06em; text-transform: uppercase; }
+.briefing-eyebrow svg { height: .875rem; width: .875rem; }
+.briefing-panels { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.25rem; }
+.briefing-panel { display: flex; min-width: 0; flex-direction: column; padding: 1.25rem; }
+.briefing-panel-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: .75rem; }
+.briefing-panel-heading h3, .briefing-chart-heading h3 { font-family: var(--font-heading); font-size: 1.0625rem; font-weight: 700; line-height: 1.4; color: var(--warna-teks); }
+.briefing-count { flex-shrink: 0; border: 1px solid var(--warna-garis); border-radius: .5rem; padding: .25rem .5rem; font-size: .6875rem; font-weight: 600; color: var(--warna-teks-redup); }
+.briefing-panel-description { margin: .625rem 0 1rem; font-size: .75rem; line-height: 1.65; color: var(--warna-teks-redup); }
+.briefing-priorities, .briefing-ranking { list-style: none; margin: 0; padding: 0; }
+.briefing-priorities > li { display: flex; align-items: flex-start; gap: .75rem; padding: .875rem 0; border-top: 1px solid var(--warna-garis); }
+.briefing-rank { display: flex; align-items: center; justify-content: center; flex-shrink: 0; width: 1.75rem; height: 1.75rem; border-radius: .5rem; background: var(--warna-permukaan-redup); color: var(--warna-teks-redup); font-size: .75rem; font-weight: 650; font-variant-numeric: tabular-nums; }
+.briefing-priority-meta { display: flex; flex-wrap: wrap; align-items: center; gap: .375rem .625rem; margin-bottom: .375rem; font-size: .625rem; color: var(--warna-teks-redup); }
+.briefing-priority { border-radius: .25rem; padding: .125rem .375rem; background: var(--warna-permukaan-redup); font-weight: 650; color: var(--warna-teks); }
+.briefing-priority.is-high { color: var(--warna-bahaya); background: color-mix(in srgb, var(--warna-bahaya) 9%, transparent); }
+.briefing-priorities h4 { font-size: .8125rem; font-weight: 650; line-height: 1.55; color: var(--warna-teks); }
+.briefing-priorities li p { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-top: .25rem; font-size: .75rem; line-height: 1.6; color: var(--warna-teks-redup); }
+.briefing-ranking > li { border-top: 1px solid var(--warna-garis); }
+.briefing-ranking button { display: flex; width: 100%; align-items: center; gap: .75rem; padding: .75rem .25rem; border-radius: .375rem; text-align: left; cursor: pointer; }
+.briefing-ranking button:hover { background: var(--warna-permukaan-redup); }
+.briefing-destination { display: flex; flex: 1; min-width: 0; flex-direction: column; gap: .125rem; }
+.briefing-destination strong { font-size: .8125rem; font-weight: 600; line-height: 1.45; color: var(--warna-teks); }
+.briefing-destination > span { font-size: .6875rem; line-height: 1.5; color: var(--warna-teks-redup); }
+.briefing-score { flex-shrink: 0; font-family: var(--font-heading); font-size: 1.125rem; font-weight: 700; color: var(--warna-utama-teks); font-variant-numeric: tabular-nums; }
+.briefing-row-arrow { flex-shrink: 0; height: .875rem; width: .875rem; color: var(--warna-teks-redup); }
+.briefing-panel-action { display: flex; width: 100%; justify-content: space-between; align-items: center; gap: .75rem; margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--warna-garis); color: var(--warna-utama-teks); font-size: .75rem; font-weight: 650; text-align: left; cursor: pointer; }
+.briefing-panel-action:hover { text-decoration: underline; text-underline-offset: 3px; }
+.briefing-panel-action svg { flex-shrink: 0; width: 1rem; height: 1rem; }
+.briefing-empty { padding: 1.5rem 0; font-size: .8125rem; color: var(--warna-teks-redup); }
+.briefing-chart-heading { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: .75rem; }
+.briefing-chart-heading > span { font-size: .75rem; color: var(--warna-teks-redup); }
+.briefing-panels button:focus-visible, .analytics-filter-toggle:focus-visible { outline: 2px solid var(--warna-utama); outline-offset: 3px; }
+@media (min-width: 1280px) {
+    .analytics-view-heading { flex-direction: row; align-items: flex-end; }
+    .analytics-view-picker { width: 19rem; }
+    .briefing-panels { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+}
+@media (max-width: 479px) {
+    .briefing-panel { padding: 1rem; }
+    .briefing-panel-heading { flex-wrap: wrap; }
+    .briefing-ranking button { gap: .5rem; }
+    .briefing-row-arrow { display: none; }
+    .analytics-filter-toggle { padding: 1rem; }
+}
+.executive-kpis { display: grid; grid-template-columns: minmax(0, 1fr); gap: .875rem; }
+.executive-kpi { display: flex; min-width: 0; flex-direction: column; gap: .875rem; padding: 1.125rem; border: 1px solid var(--warna-garis); border-radius: 1rem; background: var(--warna-permukaan); }
+.executive-kpi-label { display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem; }
+.executive-kpi-label h2 { margin: 0; font-size: .8125rem; font-weight: 600; line-height: 1.5; color: var(--warna-teks-redup); letter-spacing: normal; }
+.executive-kpi-label > svg { flex-shrink: 0; width: 1.125rem; height: 1.125rem; color: var(--warna-utama-teks); }
+.executive-kpi-value { display: flex; flex-wrap: wrap; align-items: baseline; gap: .375rem; font-family: var(--font-heading); font-size: 2rem; font-weight: 750; line-height: 1.15; letter-spacing: -.035em; font-variant-numeric: tabular-nums; color: var(--warna-teks); }
+.executive-kpi-currency { font-size: clamp(1.25rem, 2.7cqi, 1.65rem); letter-spacing: -.025em; }
+.executive-kpi-unit { font-size: .75rem; font-weight: 500; letter-spacing: normal; color: var(--warna-teks-redup); }
+.executive-kpi-detail { display: flex; flex-wrap: wrap; align-items: center; gap: .375rem .5rem; margin-top: auto; font-size: .75rem; line-height: 1.5; color: var(--warna-teks-redup); }
+.executive-change { display: inline-flex; flex-shrink: 0; border-radius: .375rem; padding: .125rem .375rem; font-size: .6875rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.executive-change.is-positive { color: var(--warna-sukses); background: color-mix(in srgb, var(--warna-sukses) 10%, transparent); }
+.executive-change.is-negative { color: var(--warna-bahaya); background: color-mix(in srgb, var(--warna-bahaya) 10%, transparent); }
+.executive-review-link { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-top: auto; border-top: 1px solid var(--warna-garis); padding-top: .625rem; text-align: left; font-size: .75rem; font-weight: 600; line-height: 1.5; color: var(--warna-utama-teks); cursor: pointer; }
+.executive-review-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+.executive-review-link:focus-visible { outline: 2px solid var(--warna-utama); outline-offset: 4px; }
+.workspace-shell .executive-nav-link[aria-current='page'] { box-shadow: inset 2px 0 var(--warna-utama); }
+@container (min-width: 34rem) {
+    .executive-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@container (min-width: 54rem) {
+    .executive-kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (min-width: 768px) and (max-width: 1439px) {
+    .dashboard-content .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 640px) and (max-width: 767px) {
+    .dashboard-content .kpi-grid { grid-template-columns: minmax(0, 1fr); }
+}
+.workspace-content .admin-heading-actions :where(a, button) { min-height: 2.5rem; border: 1px solid var(--warna-garis); background: var(--warna-permukaan); color: var(--warna-teks); box-shadow: none; }
+.workspace-content .admin-heading-actions :where(a, button):hover { border-color: var(--warna-utama); background: var(--warna-utama-muda); }
+.workspace-content .admin-heading-actions svg { color: var(--warna-utama-teks); }
+.workspace-content .chart-card { container-type: inline-size; }
+.workspace-content .chart-card { min-width: 0; scroll-margin-top: 5rem; }
+.workspace-content .chart-card-header h3,
+.workspace-content .chart-card-header p,
+.workspace-content .chart-card-badges { overflow-wrap: anywhere; }
+.workspace-content .chart-card-actions { flex-wrap: wrap; }
+.chart-expanded { container-type: inline-size; background: var(--warna-permukaan); color: var(--warna-teks); }
+.chart-expanded .chart-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+.chart-expanded .chart-card-header > div:first-child { min-width: 0; flex: 1; }
+.chart-expanded .chart-card-actions { flex-shrink: 0; }
+.chart-card .responsive-chart .apexcharts-legend { max-width: 100%; gap: 2px; }
+.chart-card .responsive-chart .apexcharts-legend-series { max-width: 100%; align-items: baseline !important; }
+.chart-card .responsive-chart .apexcharts-legend-text { overflow-wrap: anywhere; white-space: normal !important; }
+.chart-card .responsive-chart .apexcharts-legend-marker { flex-shrink: 0; }
+@media (max-width: 639px) {
+    .chart-expanded .chart-card-header { flex-direction: column; }
+}
+.dashboard-content .chart-card-badges > span:last-child { background: transparent; padding-left: .25rem; color: var(--warna-teks-redup); font-weight: 500; }
+.workspace-content .workspace-tabs > button { border-radius: .625rem; }
+.workspace-content .account-aside h2 { max-width: 28ch; }
+.workspace-shell > aside nav a { font-size: .8125rem; line-height: 1.5; }
+@container (min-width: 35rem) {
+    .workspace-content .chart-card-header { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; }
+    .workspace-content .chart-card-actions { justify-self: end; }
+}
+@media (min-width: 1280px) {
+    .workspace-content .page-heading-row { flex-direction: row; justify-content: space-between; align-items: flex-end; }
+    .workspace-content .page-heading-row > div:first-child { flex: 1; }
+    .workspace-content .page-heading-actions { max-width: 48%; }
+}
+.workspace-shell footer :where(p, li, a) { font-size: 0.8125rem; line-height: 1.65; }
+.workspace-shell footer { margin-top: 2.5rem; }
+.workspace-shell header :where(button, a) { flex-shrink: 0; }
+@media (max-width: 639px) {
+    .workspace-content :where(input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='hidden']), select, textarea) { font-size: 1rem; }
+    .workspace-content .page-heading-actions { width: 100%; }
+    .workspace-content .page-heading-actions > div { width: 100%; }
+    .workspace-content .account-aside > img { aspect-ratio: 16 / 7; }
+    .workspace-shell .workspace-search { flex: none; width: 2.25rem; height: 2.25rem; padding: 0; justify-content: center; }
+    .workspace-shell .workspace-search > span > span { display: none; }
+    .workspace-content .chart-card-header > div:first-child { flex-basis: auto; }
+    .workspace-content :where(th, td) { padding: 0.7rem 0.75rem; }
+    .workspace-content :where(.chart-card-header) { flex-direction: column; }
+    .workspace-content :where(.chart-card-header > div:first-child) { width: 100%; }
+    .workspace-content :where(.sticky) { position: static; }
+    .workspace-content :where(.workspace-tabs) { padding-bottom: 0.5rem; }
+    .workspace-shell header > div { gap: 0.375rem; padding-inline: 0.75rem; }
+    .workspace-shell header > div > div:last-child { gap: 0.375rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .workspace-content *, .workspace-shell aside { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
