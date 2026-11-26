@@ -7,6 +7,7 @@ use App\Models\Destinasi;
 use App\Models\Itinerary;
 use App\Models\Tiket;
 use App\Models\Ulasan;
+use App\Services\SentimentAnalyzerService;
 use App\Models\Wishlist;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
@@ -397,11 +398,10 @@ class TouristActionController extends Controller
         $user = $request->user();
         $dest = Destinasi::findOrFail($validated['destinasi_id']);
 
-        // Sentiment classification rule + aspect score calibration
-        $avgAspect = ($validated['skor_pemandangan'] + $validated['skor_kebersihan'] + $validated['skor_akses'] + $validated['skor_fasilitas'] + $validated['skor_harga']) / 5.0;
-        $combined = ($validated['rating'] * 0.6) + ($avgAspect * 0.4);
-        $labelSentimen = $combined >= 3.7 ? 'positif' : ($combined >= 2.6 ? 'netral' : 'negatif');
-        $skorSentimen = round(min(0.99, max(0.05, $combined / 5.0)), 4);
+        // Contextual Indonesian & English text sentiment classification
+        $sentimentResult = app(SentimentAnalyzerService::class)->analyze($validated['teks_ulasan']);
+        $labelSentimen = $sentimentResult['label'];
+        $skorSentimen = $sentimentResult['skor'];
 
         // Privacy rule from PRD Section 11: abbreviated user name on reviews
         $parts = explode(' ', trim($user->name));

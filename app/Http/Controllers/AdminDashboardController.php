@@ -14,6 +14,7 @@ use App\Models\Ulasan;
 use App\Models\User;
 use App\Models\Wilayah;
 use App\Services\DashboardChartService;
+use App\Services\SentimentAnalyzerService;
 use App\Services\WarehouseEtlService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
@@ -155,6 +156,46 @@ class AdminDashboardController extends Controller
             ->orderByDesc('tanggal')
             ->limit(30)
             ->get();
+
+        $sentimentAnalyzer = app(SentimentAnalyzerService::class);
+        $realReviews = Ulasan::with('destinasi:id,nama_destinasi')
+            ->where('status_moderasi', '!=', 'disembunyikan')
+            ->orderByDesc('id')
+            ->get();
+
+        $sentimentItems = $realReviews->map(function (Ulasan $rev) use ($sentimentAnalyzer): array {
+            $analysis = $sentimentAnalyzer->analyze((string) $rev->teks_ulasan);
+            $label = $rev->label_sentimen ?: $analysis['label'];
+
+            return [
+                'id' => $rev->id,
+                'nama_pengguna' => $rev->nama_pengguna,
+                'destinasi_nama' => $rev->destinasi?->nama_destinasi ?? '-',
+                'tanggal' => $rev->tanggal ? $rev->tanggal->format('Y-m-d') : '-',
+                'rating' => (int) $rev->rating,
+                'teks_ulasan' => (string) $rev->teks_ulasan,
+                'label_sentimen' => $label,
+                'skor_sentimen' => (float) ($rev->skor_sentimen ?? $analysis['skor']),
+                'kata_positif' => $analysis['kata_positif'],
+                'kata_negatif' => $analysis['kata_negatif'],
+            ];
+        })->values();
+
+        $sentTotal = $sentimentItems->count();
+        $sentPos = $sentimentItems->where('label_sentimen', 'positif')->count();
+        $sentNet = $sentimentItems->where('label_sentimen', 'netral')->count();
+        $sentNeg = $sentimentItems->where('label_sentimen', 'negatif')->count();
+
+        $sentimentAnalysis = [
+            'total' => $sentTotal,
+            'positif' => $sentPos,
+            'netral' => $sentNet,
+            'negatif' => $sentNeg,
+            'persen_positif' => $sentTotal > 0 ? round(($sentPos / $sentTotal) * 100, 1) : 0.0,
+            'persen_netral' => $sentTotal > 0 ? round(($sentNet / $sentTotal) * 100, 1) : 0.0,
+            'persen_negatif' => $sentTotal > 0 ? round(($sentNeg / $sentTotal) * 100, 1) : 0.0,
+            'ulasan' => $sentimentItems,
+        ];
         $pengaduanList = Pengaduan::with('destinasi:id,nama_destinasi')
             ->orderByRaw("FIELD(status, 'baru', 'diproses', 'selesai', 'ditolak')")
             ->orderByDesc('id')
@@ -203,6 +244,7 @@ class AdminDashboardController extends Controller
             'destinasiList' => $destinasiList,
             'wilayahList' => $wilayahList,
             'ulasanModerasi' => $ulasanModerasi,
+            'sentimentAnalysis' => $sentimentAnalysis,
             'pengaduanList' => $pengaduanList,
             'eventsList' => $eventsList,
             'beritaList' => $beritaList,

@@ -151,6 +151,7 @@
                 </button>
             </ScrollTabs>
             <OfficialTourismCharts v-if="activeTab === 'ringkasan'" />
+            <AdminSentimentPanel v-if="activeTab === 'ringkasan' || activeTab === 'sentimen'" :sentiment="sentimentAnalysis" />
 
             <div v-show="activeTab === 'rekomendasi'" class="space-y-5">
                 <div class="surface-card p-6">
@@ -800,6 +801,7 @@
 <script setup>
 import ScrollTabs from '@/Components/ui/ScrollTabs.vue';
 import OfficialTourismCharts from '@/Components/dashboard/OfficialTourismCharts.vue';
+import AdminSentimentPanel from '@/Components/dashboard/AdminSentimentPanel.vue';
 import PageHeading from '@/Components/ui/PageHeading.vue';
 import { ref, reactive, computed, watch } from 'vue';
 import { Link, useForm, router } from '@inertiajs/vue3';
@@ -829,6 +831,7 @@ const props = defineProps({
     destinasiList: { type: Array, default: () => [] },
     wilayahList: { type: Array, default: () => [] },
     ulasanModerasi: { type: Array, default: () => [] },
+    sentimentAnalysis: { type: Object, default: () => ({ total: 0, positif: 0, netral: 0, negatif: 0, persen_positif: 0, persen_netral: 0, persen_negatif: 0, ulasan: [] }) },
     pengaduanList: { type: Array, default: () => [] },
     eventsList: { type: Array, default: () => [] },
     beritaList: { type: Array, default: () => [] },
@@ -908,6 +911,7 @@ function focusDestinasiCharts(destId) {
 
 const navTabs = computed(() => [
     { id: 'ringkasan', label: t('Statistik resmi', 'Official statistics') },
+    { id: 'sentimen', label: t('Analisis Sentimen', 'Sentiment Analysis'), badge: props.sentimentAnalysis?.total || 0 },
     { id: 'rekomendasi', label: t('Rekomendasi Kebijakan', 'Policy Recommendations'), badge: props.kpi.rekomendasi_aktif_count },
     { id: 'warehouse', label: t('Data & sinkronisasi', 'Data & sync') },
     { id: 'master', label: t('Destinasi & pengelola', 'Destinations & managers'), badge: props.kpi.antrean_persetujuan_count },
