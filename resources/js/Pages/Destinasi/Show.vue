@@ -175,47 +175,54 @@ const dayBarOptions = computed(() => ({
         <div class="mx-auto max-w-[1440px] px-4 py-8 sm:px-6 lg:px-8">
             <nav class="page-breadcrumb" :aria-label="t('Jejak navigasi', 'Breadcrumb')"><Link href="/" class="hover:text-utama-teks">{{ t('Beranda', 'Home') }}</Link><span aria-hidden="true">/</span><Link href="/destinasi" class="hover:text-utama-teks">{{ t('Destinasi', 'Destinations') }}</Link><span aria-hidden="true">/</span><span aria-current="page">{{ destinasi.nama_destinasi }}</span></nav>
             <!-- Galeri Foto Atas (1 Besar + Info Ringkas sesuai Wireframe DESIGN.md) -->
-            <div class="grid grid-cols-1 gap-4 lg:grid-cols-12">
-                <div class="relative overflow-hidden rounded-3xl lg:col-span-8 h-[340px] sm:h-[420px]">
-                    <img
-                        :src="destinasi.foto_utama"
-                        :alt="destinasi.nama_destinasi"
-                        :style="{ objectPosition: destinasi.foto_attribution?.position || 'center' }"
-                        class="h-full w-full object-cover"
-                    />
-                    <div class="absolute inset-0 bg-gradient-to-t from-[#12344D]/80 via-transparent to-transparent"></div>
-                    <div class="absolute bottom-5 left-5 right-5 flex flex-wrap items-end justify-between gap-4 text-white">
-                        <div>
-                            <div class="flex flex-wrap items-center gap-2">
-                                <span class="rounded-lg bg-[#0E7C86] px-3 py-1 text-xs font-bold">
-                                    {{ destinasi.kategori }}
-                                </span>
-                                <span v-if="skorInfo" class="rounded-lg bg-white/20 backdrop-blur-xs px-3 py-1 text-xs font-bold"> {{ t("Kuadran:", "Quadrant:") }} {{ skorInfo.kuadran }} {{ t("(Skor", "(Score") }} {{ skorInfo.skor_total }})
-                                </span>
+            <div class="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:items-stretch">
+                <div class="flex flex-col lg:col-span-8">
+                    <div class="relative flex-1 overflow-hidden rounded-3xl min-h-[340px] sm:min-h-[420px]">
+                        <img
+                            :src="destinasi.foto_utama"
+                            :alt="destinasi.nama_destinasi"
+                            :style="{ objectPosition: destinasi.foto_attribution?.position || 'center' }"
+                            class="absolute inset-0 h-full w-full object-cover"
+                        />
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#12344D]/80 via-transparent to-transparent"></div>
+                        <div class="absolute bottom-5 left-5 right-5 flex flex-wrap items-end justify-between gap-4 text-white">
+                            <div>
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <span class="rounded-lg bg-[#0E7C86] px-3 py-1 text-xs font-bold">
+                                        {{ destinasi.kategori }}
+                                    </span>
+                                    <span v-if="skorInfo" class="rounded-lg bg-white/20 backdrop-blur-xs px-3 py-1 text-xs font-bold"> {{ t("Kuadran:", "Quadrant:") }} {{ skorInfo.kuadran }} {{ t("(Skor", "(Score") }} {{ skorInfo.skor_total }})
+                                    </span>
+                                </div>
+                                <h1 class="font-heading mt-2 text-2xl font-extrabold sm:text-4xl">
+                                    {{ destinasi.nama_destinasi }}
+                                </h1>
+                                <div class="mt-1 flex flex-wrap items-center gap-4 text-xs text-[#D5EEF0]">
+                                    <span class="inline-flex items-center gap-1">
+                                        <MapPin class="h-3.5 w-3.5" /> {{ destinasi.wilayah?.nama_wilayah }}
+                                    </span>
+                                    <span class="inline-flex items-center gap-1">
+                                        <Clock class="h-3.5 w-3.5" /> {{ t("Jam Buka:", "Opening hours:") }} {{ destinasi.jam_operasional || t('Belum tersedia', 'Unavailable') }}
+                                    </span>
+                                    <span class="inline-flex items-center gap-1 font-bold text-[#E0A422]">
+                                        <Star class="h-3.5 w-3.5 fill-[#E0A422]" /> {{ destinasi.rating_rata_rata }} ({{ destinasi.jumlah_ulasan }} {{ t("ulasan)", "reviews)") }} </span>
+                                </div>
                             </div>
-                            <h1 class="font-heading mt-2 text-2xl font-extrabold sm:text-4xl">
-                                {{ destinasi.nama_destinasi }}
-                            </h1>
-                            <div class="mt-1 flex flex-wrap items-center gap-4 text-xs text-[#D5EEF0]">
-                                <span class="inline-flex items-center gap-1">
-                                    <MapPin class="h-3.5 w-3.5" /> {{ destinasi.wilayah?.nama_wilayah }}
-                                </span>
-                                <span class="inline-flex items-center gap-1">
-                                    <Clock class="h-3.5 w-3.5" /> {{ t("Jam Buka:", "Opening hours:") }} {{ destinasi.jam_operasional || t('Belum tersedia', 'Unavailable') }}
-                                </span>
-                                <span class="inline-flex items-center gap-1 font-bold text-[#E0A422]">
-                                    <Star class="h-3.5 w-3.5 fill-[#E0A422]" /> {{ destinasi.rating_rata_rata }} ({{ destinasi.jumlah_ulasan }} {{ t("ulasan)", "reviews)") }} </span>
-                            </div>
-                        </div>
 
-                        <button
-                            type="button"
-                            @click="toggleWishlist"
-                            class="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-xs font-bold text-[#12344D] shadow-lg transition hover:bg-[#D5EEF0]"
-                        >
-                            <Heart class="h-4 w-4" :class="isWishlisted ? 'fill-[#C2492E] text-[#C2492E]' : ''" />
-                            <span>{{ isWishlisted ? t('Tersimpan di Wishlist', 'Saved to wishlist') : t('Simpan ke Wishlist', 'Save to wishlist') }}</span>
-                        </button>
+                            <button
+                                type="button"
+                                @click="toggleWishlist"
+                                class="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-xs font-bold text-[#12344D] shadow-lg transition hover:bg-[#D5EEF0]"
+                            >
+                                <Heart class="h-4 w-4" :class="isWishlisted ? 'fill-[#C2492E] text-[#C2492E]' : ''" />
+                                <span>{{ isWishlisted ? t('Tersimpan di Wishlist', 'Saved to wishlist') : t('Simpan ke Wishlist', 'Save to wishlist') }}</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div v-if="destinasi.foto_attribution" class="mt-2.5 space-y-0.5 px-1 text-tinta-redup">
+                        <p class="text-xs">{{ t(destinasi.foto_attribution.caption_id, destinasi.foto_attribution.caption_en) }}</p>
+                        <PhotoCredit :photo="destinasi.foto_attribution" />
                     </div>
                 </div>
 
@@ -234,11 +241,6 @@ const dayBarOptions = computed(() => ({
                         <p v-else class="py-12 text-center text-sm text-tinta-redup">{{ t('Belum ada data keramaian.', 'No crowd report is available.') }}</p>
                     </KartuChart>
                 </div>
-            </div>
-
-            <div v-if="destinasi.foto_attribution" class="mt-3 space-y-1 text-tinta-redup">
-                <p class="text-xs">{{ t(destinasi.foto_attribution.caption_id, destinasi.foto_attribution.caption_en) }}</p>
-                <PhotoCredit :photo="destinasi.foto_attribution" />
             </div>
 
             <!-- Konten Utama (Kiri: Deskripsi, Chart & Ulasan | Kanan: Kartu Pemesanan E-Tiket) -->
